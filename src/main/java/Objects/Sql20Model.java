@@ -23,7 +23,7 @@ public class Sql20Model implements Model {
     @Override
     public UUID createPost(String title, String content, List categories) {
 
-        try{
+       /* try{
             Connection conn = sql2o.beginTransaction(java.sql.Connection.TRANSACTION_SERIALIZABLE);
             UUID postUuid = uuidGenerator.generate();
             conn.createQuery("insert into posts(post_uuid, title, content, publishing_date) VALUES (:post_uuid, :title, :content, :date)")
@@ -43,8 +43,8 @@ public class Sql20Model implements Model {
         }catch (Exception e){
             e.printStackTrace();
         }
-        return null;
-        /*try (Connection conn = sql2o.beginTransaction()) {
+        return null;*/
+        try (Connection conn = sql2o.beginTransaction(java.sql.Connection.TRANSACTION_SERIALIZABLE)) {
             UUID postUuid = uuidGenerator.generate();
             conn.createQuery("insert into posts(post_uuid, title, content, publishing_date) VALUES (:post_uuid, :title, :content, :date)")
                     .addParameter("post_uuid", postUuid)
@@ -59,7 +59,7 @@ public class Sql20Model implements Model {
                             .executeUpdate());
             conn.commit();
             return postUuid;
-        }*/
+        }
     }
 
     @Override
