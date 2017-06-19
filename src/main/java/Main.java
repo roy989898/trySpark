@@ -1,7 +1,7 @@
 import Objects.Model;
 import Objects.NewPostPayload;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static spark.Spark.get;
@@ -22,8 +22,8 @@ public class Main {
         // insert a post (using HTTP post method)
         post("/posts", (request, response) -> {
             try {
-                ObjectMapper mapper = new ObjectMapper();
-                NewPostPayload creation = mapper.readValue(request.body(), NewPostPayload.class);
+                Gson gson = new Gson();
+                NewPostPayload creation = gson.fromJson(request.body(), NewPostPayload.class);
                 if (!creation.isValid()) {
                     response.status(HTTP_BAD_REQUEST);
                     return "";
@@ -32,7 +32,7 @@ public class Main {
                 response.status(200);
                 response.type("application/json");
                 return id;
-            } catch (JsonParseException jpe) {
+            } catch (JsonSyntaxException jpe) {
                 response.status(HTTP_BAD_REQUEST);
                 return "";
             }
