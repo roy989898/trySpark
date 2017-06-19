@@ -38,6 +38,15 @@ public class Main {
             }
         });
 
-
+        // get all post (using HTTP get method)
+        get("/posts", (request, response) -> {
+            response.status(200);
+            response.type("application/json");
+            String returnString = Utility.dataToJson(model.getAllPosts());
+            return returnString;
+        });
     }
+
+
 }
+
