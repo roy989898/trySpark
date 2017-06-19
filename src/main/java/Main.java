@@ -1,7 +1,14 @@
-import org.sql2o.Connection;
+import Objects.NewPostPayload;
+import Objects.Sql20Model;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import org.sql2o.Sql2o;
 
+import java.util.UUID;
+
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static spark.Spark.get;
+import static spark.Spark.post;
 
 /**
  * Created by pomingpo on 2017/6/19.
@@ -11,14 +18,16 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Connection connection = connectToDatabase();
+        Sql2o sql2o = connectToDatabase();
+
+        Sql20Model model = new Sql20Model(sql2o);
 
 
         get("/hello", (req, res) -> {
             return "Hello";
         });
 
-        /*// insert a post (using HTTP post method)
+        // insert a post (using HTTP post method)
         post("/posts", (request, response) -> {
             try {
                 Gson gson = new Gson();
@@ -27,10 +36,10 @@ public class Main {
                     response.status(HTTP_BAD_REQUEST);
                     return "";
                 }
-                int id = model.createPost(creation.getTitle(), creation.getContent(), creation.getCategories());
+                UUID id = model.createPost(creation.getTitle(), creation.getContent(), creation.getCategories());
                 response.status(200);
                 response.type("application/json");
-                return id;
+                return id.toString();
             } catch (JsonSyntaxException jpe) {
                 response.status(HTTP_BAD_REQUEST);
                 return "";
@@ -43,25 +52,24 @@ public class Main {
             response.type("application/json");
             String returnString = Utility.dataToJson(model.getAllPosts());
             return returnString;
-        });*/
+        });
     }
 
-    private static org.sql2o.Connection connectToDatabase() {
+    private static Sql2o connectToDatabase() {
 
 
-        org.sql2o.Connection connection = null;
+        Sql2o sql2o = null;
         try {
 //            Class.forName("org.sqlite.JDBC");
 
-            Sql2o sql2o = new Sql2o(DB_URL,null,null);
-            connection = sql2o.open();
+            sql2o = new Sql2o(DB_URL, null, null);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
         System.out.println("Opened database successfully");
 
-        return connection;
+        return sql2o;
 
     }
 
